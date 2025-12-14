@@ -40,13 +40,33 @@ if (typeof localStorage !== 'undefined') {
     const stored = localStorage.getItem('leetcode-helper-similarity-threshold');
     if (stored) SIMILARITY_THRESHOLD = parseFloat(stored);
 }
+// Also check chrome.storage for consistency with popup
+try {
+    chrome.storage.local.get(['leetcode-helper-similarity-threshold'], (result) => {
+        if (result['leetcode-helper-similarity-threshold']) {
+            SIMILARITY_THRESHOLD = parseFloat(result['leetcode-helper-similarity-threshold']);
+        }
+    });
+} catch (e) {
+}
 
 function findMatchingProblems(pageText) {
     console.log('Finding matches for:', pageText.substring(0, 100) + '...');
     
     const matches = [];
+    const pageWords = new Set(normalizeText(pageText).split(/\s+/));
+    const minThreshold = Math.max(0.15, SIMILARITY_THRESHOLD); // Ensure minimum threshold to prevent overload
+    
     for (let i = 0; i < leetcodeData.length; i++) {
         const problem = leetcodeData[i];
+        
+        // Quick pre-filter: check if problem has any matching words
+        const problemWords = new Set(normalizeText(problem.title).split(/\s+/));
+        const hasCommonWords = [...pageWords].some(word => problemWords.has(word));
+        
+        if (!hasCommonWords && minThreshold > 0.3) {
+            continue; // Skip if no common words and threshold is reasonable
+        }
         
         const titleSimilarity = calculateSimilarity(pageText, problem.title);
         let descSimilarity = 0;
@@ -57,7 +77,7 @@ function findMatchingProblems(pageText) {
         
         const combinedScore = (descSimilarity * 1.5) + (titleSimilarity * 0.8);
         
-        if (combinedScore >= SIMILARITY_THRESHOLD || titleSimilarity >= SIMILARITY_THRESHOLD || descSimilarity >= SIMILARITY_THRESHOLD) {
+        if (combinedScore >= minThreshold || titleSimilarity >= minThreshold || descSimilarity >= minThreshold) {
             matches.push({
                 ...problem,
                 titleMatch: titleSimilarity,
@@ -71,21 +91,28 @@ function findMatchingProblems(pageText) {
     
     matches.sort((a, b) => b.combinedScore - a.combinedScore);
 
+    // Deduplicate: remove redundant matches more efficiently
     const uniqueMatches = [];
     const seenTitles = new Set();
+    
     for (const match of matches) {
         const normalizedTitle = normalizeText(match.title);
         let isRedundant = false;
+        
         for (const seenTitle of seenTitles) {
             if (calculateSimilarity(normalizedTitle, seenTitle) > 0.8) {
                 isRedundant = true;
                 break;
             }
         }
+        
         if (!isRedundant) {
             uniqueMatches.push(match);
             seenTitles.add(normalizedTitle);
         }
+        
+        // Hard limit to prevent excessive DOM manipulation
+        if (uniqueMatches.length >= 30) break;
     }
     
     console.log('Found', uniqueMatches.length, 'unique matches');
@@ -258,6 +285,12 @@ function updateUI(matches) {
     const loadingContainer = container.querySelector('.loading-container');
     if (loadingContainer) {
         loadingContainer.classList.add('loaded');
+    }
+    
+    // Store last search results count
+    try {
+        chrome.storage.local.set({ lastSearchResults: matches.length });
+    } catch (e) {
     }
     
     const content = document.createElement('div');
@@ -542,6 +575,12 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     }
     if (request.action === 'getSimilarityThreshold') {
         sendResponse({ value: SIMILARITY_THRESHOLD });
+    }
+    if (request.action === 'getToggleState') {
+        sendResponse({ enabled: visibilityEnabled });
+    }
+    if (request.action === 'getProblemCount') {
+        sendResponse({ count: leetcodeData.length });
     }
 });
 

@@ -9,127 +9,179 @@ async function sendMessageToActiveTab(message) {
 }
 
 function showStatus(message, type, duration = 2000) {
-  const statusEl = document.getElementById("status");
-  statusEl.textContent = message;
-  statusEl.className = `status ${type}`;
+  const statusBlob = document.getElementById("statusBlob");
   
-  if (type === "error") {
-    return; 
-  }
+  // Update blob color
+  statusBlob.className = `status-blob ${type === 'error' ? 'inactive' : 'active'}`;
   
   if (duration === 0) {
     return; 
   }
   
-  setTimeout(() => {
-    statusEl.textContent = "🟢 Running";
-    statusEl.className = "status running";
-  }, duration);
+  if (type !== "error") {
+    setTimeout(() => {
+      statusBlob.className = "status-blob active";
+    }, duration);
+  }
 }
 
-// Check if current page is TakeUForward
-async function checkCurrentSite() {
-  try {
-    const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-    const url = new URL(tab.url);
-    
-    if (!url.hostname.includes('takeuforward.org')) {
-      showStatus("❌ Wrong Site", "error");
-      return false;
-    }
-    return true;
-  } catch (error) {
-    showStatus("❌ Cannot detect site", "error");
-    return false;
+
+
+function updateEyeIcon(isEnabled) {
+  const toggleBtn = document.getElementById("toggleBtn");
+  if (isEnabled) {
+    // Open eye
+    toggleBtn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>';
+  } else {
+    // Closed eye
+    toggleBtn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>';
   }
 }
 
 document.addEventListener("DOMContentLoaded", async () => {
-  const problemCountEl = document.getElementById("problemCount");
-  const currentPageEl = document.getElementById("currentPage");
   const similaritySlider = document.getElementById("similaritySlider");
   const similarityValue = document.getElementById("similarityValue");
+  const toggleBtn = document.getElementById("toggleBtn");
+  const presetButtons = document.querySelectorAll(".preset-btn");
+  const problemCount = document.getElementById("problemCount");
+  const lastResults = document.getElementById("lastResults");
 
-  // Check if we're on the right site first
-  const isCorrectSite = await checkCurrentSite();
-  
-  if (!isCorrectSite) {
+  // Load problem count from background script or storage
+  async function loadProblemCount() {
     try {
-      const response = await chrome.runtime.sendMessage({ action: "getLeetCodeData" });
-      problemCountEl.textContent = response ? response.length : 0;
-
-      const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-      const hostname = new URL(tab.url).hostname;
-      currentPageEl.textContent = hostname;
-    } catch (error) {
-      problemCountEl.textContent = "Error";
-      currentPageEl.textContent = "Unknown";
-    }
-    
-    return;
-  }
-
-  // Load similarity threshold (only if on correct site)
-  try {
-    const response = await sendMessageToActiveTab({ action: "getSimilarityThreshold" });
-    if (response && typeof response.value === "number") {
-      similaritySlider.value = response.value;
-      similarityValue.textContent = response.value;
-    }
-  } catch (e) {
-  }
-
-  try {
-    const response = await chrome.runtime.sendMessage({ action: "getLeetCodeData" });
-    problemCountEl.textContent = response ? response.length : 0;
-
-    const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-    const hostname = new URL(tab.url).hostname;
-    currentPageEl.textContent = hostname;
-
-    if (!document.getElementById("status").className.includes("error")) {
-      showStatus("✅ Extension ready!", "success");
-    }
-  } catch (error) {
-    showStatus("❌ Error loading data", "error"); 
-    problemCountEl.textContent = "Error";
-  }
-
-  document.getElementById("refreshBtn").addEventListener("click", async () => {
-    const isSiteOk = await checkCurrentSite();
-    if (!isSiteOk) return;
-    
-    try {
-      await sendMessageToActiveTab({ action: "refresh" });
-      showStatus("🔄 Refreshed!", "success");
+      const data = await chrome.runtime.sendMessage({ action: "getProblemCountFromBackground" });
+      if (data?.count && data.count > 0) {
+        problemCount.textContent = data.count.toLocaleString();
+        return;
+      }
     } catch (e) {
     }
+    
+    // Fallback: get from storage
+    try {
+      const data = await chrome.storage.local.get(["leetcodeData"]);
+      if (data.leetcodeData && data.leetcodeData.length > 0) {
+        problemCount.textContent = data.leetcodeData.length.toLocaleString();
+        return;
+      }
+    } catch (e) {
+    }
+    
+    problemCount.textContent = "Loading...";
+    
+    // If still not available, retry after a delay
+    setTimeout(async () => {
+      try {
+        const data = await chrome.runtime.sendMessage({ action: "getProblemCountFromBackground" });
+        if (data?.count && data.count > 0) {
+          problemCount.textContent = data.count.toLocaleString();
+        }
+      } catch (e) {
+        problemCount.textContent = "—";
+      }
+    }, 1000);
+  }
+  
+  loadProblemCount();
+
+  // Load last search results from storage
+  try {
+    const data = await chrome.storage.local.get(["lastSearchResults"]);
+    if (data.lastSearchResults !== undefined) {
+      lastResults.textContent = data.lastSearchResults.toString();
+    }
+  } catch (e) {
+    lastResults.textContent = "—";
+  }
+
+  // Load similarity threshold from background script
+  try {
+    const response = await chrome.runtime.sendMessage({ action: "getSimilarityThreshold" });
+    if (response && typeof response.value === "number") {
+      similaritySlider.value = response.value.toString();
+      similarityValue.textContent = response.value.toString();
+      updatePresetButtons(response.value);
+    }
+  } catch (e) {
+    // Fallback to default
+    similaritySlider.value = "0.4";
+    similarityValue.textContent = "0.4";
+  }
+
+  // Load initial toggle state
+  try {
+    const response = await sendMessageToActiveTab({ action: "getToggleState" });
+    updateEyeIcon(response?.enabled !== false);
+  } catch (e) {
+    updateEyeIcon(true);
+  }
+
+  try {
+    await chrome.runtime.sendMessage({ action: "getLeetCodeData" });
+    showStatus("Extension ready!", "success");
+  } catch (error) {
+    showStatus("Error loading data", "error");
+  }
+
+  // Preset button handlers
+  presetButtons.forEach(btn => {
+    btn.addEventListener("click", async () => {
+      const value = parseFloat(btn.dataset.value);
+      similaritySlider.value = value.toString();
+      similarityValue.textContent = value.toString();
+      updatePresetButtons(value);
+      
+      try {
+        await chrome.runtime.sendMessage({ action: "setSimilarityThreshold", value });
+        // Also update on active tab
+        try {
+          await sendMessageToActiveTab({ action: "setSimilarityThreshold", value });
+        } catch (e) {
+        }
+        showStatus("Threshold updated!", "success");
+      } catch (e) {
+      }
+    });
   });
 
-  document.getElementById("toggleBtn").addEventListener("click", async () => {
-    const isSiteOk = await checkCurrentSite();
-    if (!isSiteOk) return;
-    
+  toggleBtn.addEventListener("click", async () => {
     try {
-      await sendMessageToActiveTab({ action: "toggle" });
-      showStatus("👁️ Toggled!", "success");
+      const response = await sendMessageToActiveTab({ action: "toggle" });
+      updateEyeIcon(response?.visible !== false);
+      showStatus("Toggled!", "success");
     } catch (e) {
     }
   });
 
   similaritySlider.addEventListener("input", (e) => {
-    similarityValue.textContent = e.target.value;
+    const value = parseFloat(e.target.value);
+    similarityValue.textContent = value.toString();
+    updatePresetButtons(value);
   });
 
   similaritySlider.addEventListener("change", async (e) => {
-    const isSiteOk = await checkCurrentSite();
-    if (!isSiteOk) return;
-    
     const value = parseFloat(e.target.value);
     try {
-      await sendMessageToActiveTab({ action: "setSimilarityThreshold", value });
-      showStatus("⚙️ Threshold updated!", "success");
+      await chrome.runtime.sendMessage({ action: "setSimilarityThreshold", value });
+      // Also update on active tab
+      try {
+        await sendMessageToActiveTab({ action: "setSimilarityThreshold", value });
+      } catch (e2) {
+      }
+      showStatus("Threshold updated!", "success");
     } catch (e) {
     }
   });
 });
+
+function updatePresetButtons(value) {
+  const presetButtons = document.querySelectorAll(".preset-btn");
+  presetButtons.forEach(btn => {
+    const btnValue = parseFloat(btn.dataset.value);
+    if (Math.abs(btnValue - value) < 0.01) {
+      btn.classList.add("active");
+    } else {
+      btn.classList.remove("active");
+    }
+  });
+}

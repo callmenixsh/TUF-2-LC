@@ -38,6 +38,39 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         sendResponse({ success: true });
         return true;
     }
+
+    if (request.action === 'getProblemCountFromBackground') {
+        // If data is loaded, return it immediately
+        if (leetcodeData.length > 0) {
+            sendResponse({ count: leetcodeData.length });
+        } else {
+            // Otherwise, get from storage (should be cached from previous loads)
+            chrome.storage.local.get(['leetcodeData'], (result) => {
+                if (result.leetcodeData && result.leetcodeData.length > 0) {
+                    sendResponse({ count: result.leetcodeData.length });
+                } else {
+                    // If still not available, return 0 and trigger load
+                    sendResponse({ count: 0 });
+                    loadLeetCodeData(); // Trigger load in background
+                }
+            });
+        }
+        return true;
+    }
+
+    if (request.action === 'getSimilarityThreshold') {
+        chrome.storage.local.get(['leetcode-helper-similarity-threshold'], (result) => {
+            const value = result['leetcode-helper-similarity-threshold'] || 0.4;
+            sendResponse({ value: parseFloat(value) });
+        });
+        return true;
+    }
+
+    if (request.action === 'setSimilarityThreshold') {
+        chrome.storage.local.set({ 'leetcode-helper-similarity-threshold': request.value });
+        sendResponse({ success: true });
+        return true;
+    }
 });
 
 loadLeetCodeData();

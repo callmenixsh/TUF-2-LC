@@ -35,6 +35,30 @@
         margin-bottom: 20px;
         position: relative;
         animation: slideIn 0.2s ease-out 0.05s both;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .github-btn {
+        position: absolute;
+        left: 0;
+        background: rgba(255, 255, 255, 0.08);
+        color: white;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        padding: 6px 10px;
+        border-radius: 12px;
+        cursor: pointer;
+        font-size: 12px;
+        font-weight: 600;
+        backdrop-filter: blur(10px);
+        transition: background 0.12s ease, box-shadow 0.12s ease;
+        text-decoration: none;
+      }
+
+      .github-btn:hover {
+        background: rgba(255, 255, 255, 0.12);
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
       }
 
       .header h1 {
@@ -49,9 +73,6 @@
       }
 
       .toggle-btn {
-        position: absolute;
-        top: 0;
-        right: 0;
         background: rgba(255, 255, 255, 0.08);
         color: white;
         border: 1px solid rgba(255, 255, 255, 0.12);
@@ -62,6 +83,14 @@
         font-weight: 600;
         backdrop-filter: blur(10px);
         transition: background 0.12s ease, box-shadow 0.12s ease;
+      }
+
+      .header-controls {
+        position: absolute;
+        right: 0;
+        display: flex;
+        align-items: center;
+        gap: 8px;
       }
 
       .toggle-btn:hover {
@@ -184,11 +213,73 @@
         box-shadow: 0 4px 8px rgba(255, 140, 0, 0.3);
       }
 
-      .actions {
+      .preset-buttons {
         display: flex;
-        flex-direction: column;
-        gap: 10px;
-        animation: slideIn 0.2s ease-out 0.2s both;
+        gap: 6px;
+        margin-top: 10px;
+      }
+
+      .preset-btn {
+        flex: 1;
+        background: rgba(255, 140, 0, 0.12);
+        color: #ffbe50;
+        border: 1px solid rgba(255, 140, 0, 0.3);
+        padding: 6px 8px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 11px;
+        font-weight: 600;
+        transition: all 0.2s ease;
+      }
+
+      .preset-btn:hover {
+        background: rgba(255, 140, 0, 0.22);
+        border-color: rgba(255, 140, 0, 0.5);
+      }
+
+      .preset-btn.active {
+        background: linear-gradient(135deg, rgba(255, 140, 0, 0.8), rgba(255, 190, 80, 0.8));
+        color: #1a1a1a;
+        border-color: #ffbe50;
+        font-weight: 700;
+      }
+
+      .stats-section {
+        background: rgba(255, 255, 255, 0.08);
+        border-radius: 14px;
+        padding: 16px;
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        animation: slideIn 0.2s ease-out 0.15s both;
+        transition: box-shadow 0.12s ease;
+        box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.06);
+      }
+
+      .stats-section:hover {
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+      }
+
+      .stat-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 13px;
+        margin-bottom: 8px;
+      }
+
+      .stat-row:last-child {
+        margin-bottom: 0;
+      }
+
+      .stat-label {
+        color: rgba(255, 255, 255, 0.7);
+        font-weight: 500;
+      }
+
+      .stat-value {
+        color: #ffeb3b;
+        font-weight: 700;
+        font-size: 14px;
       }
 
       .btn {
@@ -207,25 +298,8 @@
         overflow: hidden;
       }
 
-      /* Themed refresh button to match orange/black gradient and glass */
-      #refreshBtn.btn {
-        background: linear-gradient(135deg, rgba(255, 140, 0, 0.95), rgba(255, 190, 80, 0.9));
-        color: #1a1a1a;
-        border: 1px solid rgba(255, 140, 0, 0.5);
-        box-shadow: 0 8px 16px rgba(255, 140, 0, 0.25);
-      }
-      #refreshBtn.btn:hover {
-        background: linear-gradient(135deg, rgba(255, 140, 0, 0.98), rgba(255, 190, 80, 0.95));
-        box-shadow: 0 10px 20px rgba(255, 140, 0, 0.28);
-      }
-      #refreshBtn.btn:active {
-        background: linear-gradient(135deg, rgba(255, 140, 0, 0.92), rgba(255, 190, 80, 0.9));
-      }
+      /* Themed refresh button styles removed */
 
-      /* Remove sweeping shine effect to reduce motion */
-
-      
-      
       .btn:hover {
         background: linear-gradient(135deg, #ffffff, rgba(255, 235, 59, 0.16));
         box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
@@ -235,39 +309,7 @@
         transform: scale(.99px);
       }
 
-      .status {
-        padding: 10px 14px;
-        border-radius: 10px;
-        margin-bottom: 16px;
-        font-size: 13px;
-        text-align: center;
-        min-height: 18px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-weight: 600;
-        backdrop-filter: blur(10px);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        transition: background 0.12s ease, color 0.12s ease;
-        animation: slideIn 0.2s ease-out both;
-      }
 
-      .status.running {
-        background: linear-gradient(135deg, rgba(72, 187, 120, 0.2), rgba(72, 187, 120, 0.1));
-        color: #68d391;
-      }
-
-      .status.success {
-        background: linear-gradient(135deg, rgba(72, 187, 120, 0.25), rgba(72, 187, 120, 0.18));
-        color: #48bb78;
-      }
-
-      .status.error {
-        background: linear-gradient(135deg, rgba(245, 101, 101, 0.25), rgba(245, 101, 101, 0.18));
-        color: #f56565;
-      }
-
-      /* Removed shake animation */
 
       ::-webkit-scrollbar {
         width: 6px;
@@ -287,8 +329,22 @@
         background: linear-gradient(180deg, #ffeb3b, #ff8c00);
       }
 
-      .loading {
-        opacity: 0.7;
+      .status-blob {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        margin-right: 8px;
+        display: inline-block;
+      }
+
+      .status-blob.active {
+        background: #48bb78;
+        box-shadow: 0 0 8px rgba(72, 187, 120, 0.8);
+      }
+
+      .status-blob.inactive {
+        background: #f56565;
+        box-shadow: 0 0 8px rgba(245, 101, 101, 0.8);
       }
 
       .stats, .settings-section {
@@ -317,20 +373,16 @@
   </head>
   <body>
     <div class="header">
-      <button class="toggle-btn" id="toggleBtn">👁️</button>
-      <h1>🔗TUF-to-LC</h1>
-    </div>
-
-    <div id="status" class="status running">🟢 Running</div>
-    
-    <div class="stats">
-      <div class="stat-item">
-        <span>Problems Loaded:</span>
-        <span class="stat-value" id="problemCount">Loading...</span>
-      </div>
-      <div class="stat-item">
-        <span>Current Page:</span>
-        <span class="stat-value" id="currentPage">Analyzing...</span>
+      <a class="github-btn" href="https://github.com/callmenixsh/TUF-2-LC" target="_blank">GitHub</a>
+      <h1>TUF-to-LC</h1>
+      <div class="header-controls">
+        <span class="status-blob active" id="statusBlob"></span>
+        <button class="toggle-btn" id="toggleBtn">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+            <circle cx="12" cy="12" r="3"></circle>
+          </svg>
+        </button>
       </div>
     </div>
     
@@ -349,11 +401,23 @@
         id="similaritySlider"
         class="slider"
         />
+        <div class="preset-buttons">
+          <button class="preset-btn" data-value="0.2">Lenient</button>
+          <button class="preset-btn" data-value="0.4">Moderate</button>
+          <button class="preset-btn" data-value="0.7">Strict</button>
+        </div>
       </div>
     </div>
-    
-    <div class="actions">
-      <button class="btn" id="refreshBtn">🔄 Refresh Analysis</button>
+
+    <div class="stats-section">
+      <div class="stat-row">
+        <span class="stat-label">Problems Indexed:</span>
+        <span class="stat-value" id="problemCount">—</span>
+      </div>
+      <div class="stat-row">
+        <span class="stat-label">Last Results:</span>
+        <span class="stat-value" id="lastResults">—</span>
+      </div>
     </div>
     
     <script src="popup.js"></script>

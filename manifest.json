@@ -4,9 +4,7 @@
   "version": "1.0",
   "description": "Detects coding problems on TUF and provides LeetCode links if available",
   "permissions": [
-    "activeTab",
-    "storage",
-    "tabs"
+    "storage"
   ],
   "icons": {
     "16": "icons/T2L-16.png",
@@ -33,6 +31,5 @@
       "resources": ["leetcode-data.json"],
       "matches": ["https://takeuforward.org/*"]
     }
-  ],
-  "host_permissions": ["https://takeuforward.org/*"]
+  ]
 }
