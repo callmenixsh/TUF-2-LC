@@ -6,50 +6,43 @@
     <title>LeetCode Helper</title>
     <style>
       body {
-        width: 320px;
+        width: 340px;
         padding: 16px;
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-        background: linear-gradient(135deg, #000000 40%, #ff8c00 100%);
-        color: white;
+        font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+        background: linear-gradient(135deg, #1a1a1a 0%, #2b1700 45%, #000000 100%);
+        color: #ffffff;
         margin: 0;
         animation: fadeIn 0.4s ease-out;
       }
 
       @keyframes fadeIn {
-        from { opacity: 0; transform: translateY(-10px); }
-        to { opacity: 1; transform: translateY(0); }
+        from { opacity: 0; }
+        to { opacity: 1; }
       }
 
+      /* Minimized motion */
       @keyframes slideIn {
-        from { transform: translateX(-10px); opacity: 0; }
-        to { transform: translateX(0); opacity: 1; }
+        from { opacity: 0; }
+        to { opacity: 1; }
       }
 
-      @keyframes pulse {
-        0% { transform: scale(1); }
-        50% { transform: scale(1.05); }
-        100% { transform: scale(1); }
-      }
+      /* Removed pulse animation to reduce motion */
 
-      @keyframes glow {
-        0% { box-shadow: 0 0 5px rgba(255, 140, 0, 0.5); }
-        50% { box-shadow: 0 0 20px rgba(255, 140, 0, 0.8); }
-        100% { box-shadow: 0 0 5px rgba(255, 140, 0, 0.5); }
-      }
+      /* Removed glow animation to reduce motion */
 
       .header {
         text-align: center;
         margin-bottom: 20px;
         position: relative;
-        animation: slideIn 0.5s ease-out 0.1s both;
+        animation: slideIn 0.2s ease-out 0.05s both;
       }
 
       .header h1 {
         margin: 0;
-        font-size: 20px;
-        font-weight: 700;
-        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
-        background: linear-gradient(45deg, #ffffff, #ffeb3b);
+        font-size: 18px;
+        font-weight: 800;
+        letter-spacing: 0.2px;
+        background: linear-gradient(45deg, #ffffff, #ffe082);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         background-clip: text;
@@ -59,44 +52,40 @@
         position: absolute;
         top: 0;
         right: 0;
-        background: rgba(255, 255, 255, 0.15);
+        background: rgba(255, 255, 255, 0.08);
         color: white;
-        border: none;
+        border: 1px solid rgba(255, 255, 255, 0.12);
         padding: 6px 10px;
-        border-radius: 8px;
+        border-radius: 12px;
         cursor: pointer;
         font-size: 11px;
         font-weight: 600;
         backdrop-filter: blur(10px);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        transition: all 0.3s ease;
+        transition: background 0.12s ease, box-shadow 0.12s ease;
       }
 
       .toggle-btn:hover {
-        background: rgba(255, 255, 255, 0.25);
-        transform: scale(1.1);
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        background: rgba(255, 255, 255, 0.12);
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
       }
       .toggle-btn:active {
-        background: rgba(255, 255, 255, 0.25);
-        transform: scale(.99);
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        background: rgba(255, 255, 255, 0.16);
       }
 
       .stats {
-        background: rgba(255, 255, 255, 0.12);
-        border-radius: 12px;
+        background: rgba(255, 255, 255, 0.08);
+        border-radius: 14px;
         padding: 16px;
         margin-bottom: 18px;
         backdrop-filter: blur(10px);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        animation: slideIn 0.5s ease-out 0.2s both;
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        animation: slideIn 0.2s ease-out 0.1s both;
+        transition: box-shadow 0.12s ease;
+        box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.06);
       }
 
       .stats:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
       }
 
       .stat-item {
@@ -104,12 +93,9 @@
         justify-content: space-between;
         margin-bottom: 8px;
         font-size: 14px;
-        transition: transform 0.2s ease;
       }
 
-      .stat-item:hover {
-        transform: translateX(5px);
-      }
+      /* Remove per-item hover motion */
 
       .stat-item:last-child {
         margin-bottom: 0;
@@ -122,19 +108,19 @@
       }
 
       .settings-section {
-        background: rgba(255, 255, 255, 0.12);
-        border-radius: 12px;
+        background: rgba(255, 255, 255, 0.08);
+        border-radius: 14px;
         padding: 16px;
         margin-bottom: 18px;
         backdrop-filter: blur(10px);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        animation: slideIn 0.5s ease-out 0.3s both;
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        animation: slideIn 0.2s ease-out 0.15s both;
+        transition: box-shadow 0.12s ease;
+        box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.06);
       }
 
       .settings-section:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
       }
 
       .setting-item {
@@ -155,42 +141,39 @@
       }
 
       .similarity-value {
-        background: linear-gradient(45deg, rgba(255, 140, 0, 0.8), rgba(255, 235, 59, 0.8));
-        padding: 4px 10px;
-        border-radius: 16px;
+        background: linear-gradient(135deg, rgba(255, 140, 0, 0.9), rgba(255, 190, 80, 0.9));
+        padding: 6px 10px;
+        border-radius: 999px;
         font-size: 12px;
-        font-weight: 700;
-        color: #000;
+        font-weight: 800;
+        color: #1a1a1a;
         text-shadow: none;
         border: 1px solid rgba(255, 255, 255, 0.2);
         transition: all 0.3s ease;
       }
 
-      .similarity-value:hover {
-        animation: pulse 0.6s ease-in-out;
-      }
+      /* Remove pulse on similarity badge */
 
       .slider {
         width: 100%;
         height: 6px;
-        border-radius: 3px;
-        background: linear-gradient(90deg, rgba(255, 255, 255, 0.2), rgba(255, 140, 0, 0.3));
+        border-radius: 10px;
+        background: rgba(255, 255, 255, 0.12);
         outline: none;
         appearance: none;
         transition: all 0.3s ease;
       }
 
       .slider:hover {
-        height: 8px;
-        animation: glow 2s infinite;
+        height: 7px;
       }
 
       .slider::-webkit-slider-thumb {
         appearance: none;
-        width: 20px;
-        height: 20px;
+        width: 18px;
+        height: 18px;
         border-radius: 50%;
-        background: linear-gradient(45deg, #ff8c00, #ffeb3b);
+        background: linear-gradient(45deg, #ff8c00, #ffbe50);
         cursor: pointer;
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.3);
         border: 2px solid rgba(255, 255, 255, 0.2);
@@ -198,52 +181,54 @@
       }
 
       .slider::-webkit-slider-thumb:hover {
-        transform: scale(1.2);
-        box-shadow: 0 6px 12px rgba(255, 140, 0, 0.4);
+        box-shadow: 0 4px 8px rgba(255, 140, 0, 0.3);
       }
 
       .actions {
         display: flex;
         flex-direction: column;
         gap: 10px;
-        animation: slideIn 0.5s ease-out 0.4s both;
+        animation: slideIn 0.2s ease-out 0.2s both;
       }
 
       .btn {
-        background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.85));
-        color: #2d3748;
+        background: rgba(255, 255, 255, 0.92);
+        color: #1a1a1a;
         border: none;
         padding: 12px 18px;
-        border-radius: 10px;
+        border-radius: 12px;
         cursor: pointer;
         font-size: 14px;
-        font-weight: 600;
-        transition: all 0.3s ease;
+        font-weight: 700;
+        transition: background 0.12s ease, box-shadow 0.12s ease;
         backdrop-filter: blur(10px);
         border: 1px solid rgba(255, 255, 255, 0.2);
         position: relative;
         overflow: hidden;
       }
 
-      .btn::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: -100%;
-        width: 100%;
-        height: 100%;
-        background: linear-gradient(90deg, transparent, rgba(255, 140, 0, 0.3), transparent);
-        transition: left 0.5s ease;
+      /* Themed refresh button to match orange/black gradient and glass */
+      #refreshBtn.btn {
+        background: linear-gradient(135deg, rgba(255, 140, 0, 0.95), rgba(255, 190, 80, 0.9));
+        color: #1a1a1a;
+        border: 1px solid rgba(255, 140, 0, 0.5);
+        box-shadow: 0 8px 16px rgba(255, 140, 0, 0.25);
+      }
+      #refreshBtn.btn:hover {
+        background: linear-gradient(135deg, rgba(255, 140, 0, 0.98), rgba(255, 190, 80, 0.95));
+        box-shadow: 0 10px 20px rgba(255, 140, 0, 0.28);
+      }
+      #refreshBtn.btn:active {
+        background: linear-gradient(135deg, rgba(255, 140, 0, 0.92), rgba(255, 190, 80, 0.9));
       }
 
-      .btn:hover::before {
-        left: 100%;
-      }
+      /* Remove sweeping shine effect to reduce motion */
+
+      
       
       .btn:hover {
-        transform: scale(1.1px);
-        background: linear-gradient(135deg, #ffffff, rgba(255, 235, 59, 0.1));
-        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        background: linear-gradient(135deg, #ffffff, rgba(255, 235, 59, 0.16));
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
       }
 
       .btn:active {
@@ -263,8 +248,8 @@
         font-weight: 600;
         backdrop-filter: blur(10px);
         border: 1px solid rgba(255, 255, 255, 0.1);
-        transition: all 0.3s ease;
-        animation: slideIn 0.5s ease-out both;
+        transition: background 0.12s ease, color 0.12s ease;
+        animation: slideIn 0.2s ease-out both;
       }
 
       .status.running {
@@ -273,22 +258,16 @@
       }
 
       .status.success {
-        background: linear-gradient(135deg, rgba(72, 187, 120, 0.3), rgba(72, 187, 120, 0.2));
+        background: linear-gradient(135deg, rgba(72, 187, 120, 0.25), rgba(72, 187, 120, 0.18));
         color: #48bb78;
-        transform: scale(1.05);
       }
 
       .status.error {
-        background: linear-gradient(135deg, rgba(245, 101, 101, 0.3), rgba(245, 101, 101, 0.2));
+        background: linear-gradient(135deg, rgba(245, 101, 101, 0.25), rgba(245, 101, 101, 0.18));
         color: #f56565;
-        animation: shake 0.5s ease-in-out;
       }
 
-      @keyframes shake {
-        0%, 100% { transform: translateX(0); }
-        25% { transform: translateX(-5px); }
-        75% { transform: translateX(5px); }
-      }
+      /* Removed shake animation */
 
       ::-webkit-scrollbar {
         width: 6px;
@@ -309,7 +288,6 @@
       }
 
       .loading {
-        animation: pulse 1.5s ease-in-out infinite;
         opacity: 0.7;
       }
 

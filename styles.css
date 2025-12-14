@@ -2,18 +2,20 @@
   position: fixed;
   top: 20px;
   right: 20px;
-  width: 500px;
+  width: 480px;
   max-height: 80vh;
-  background: #1e1e1e;
-  border: 1px solid #333333;
-  border-radius: 12px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  background: rgba(20, 20, 20, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 18px;
+  box-shadow: 0 24px 48px rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(16px) saturate(120%);
+  -webkit-backdrop-filter: blur(16px) saturate(120%);
   z-index: 10000;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial;
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  animation: slideIn 0.3s ease-out;
+  animation: slideIn 0.28s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 @keyframes slideIn {
@@ -22,16 +24,18 @@
 }
 
 .leetcode-helper-header {
-  background: linear-gradient(135deg, #000000 40%, #ff8c00 100%);
-  color: white;
-  padding: 12px 16px;
-  font-weight: 600;
+  background: linear-gradient(135deg, rgba(255, 140, 0, 0.18) 0%, rgba(255, 255, 255, 0.06) 100%);
+  color: #fff;
+  padding: 14px 18px;
+  font-weight: 700;
+  letter-spacing: 0.2px;
   display: flex;
   justify-content: space-between;
   align-items: center;
   flex-shrink: 0;
-  border-radius: 12px 12px 0 0;
+  border-radius: 18px 18px 0 0;
   font-size: 14px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .close-btn {
@@ -51,24 +55,72 @@
 }
 
 .close-btn:hover {
-  background: rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.18);
 }
 
 .loading-container {
-  padding: 24px;
+  padding: 22px 18px 18px 18px;
   text-align: center;
-  color: #b0b0b0; 
-  background: #1e1e1e;
+  color: #cfcfcf;
+  position: relative;
+  border-radius: 18px;
+  isolation: isolate;
+}
+
+.loading-container::before {
+  content: '';
+  position: absolute;
+  inset: -3px;
+  border-radius: 20px;
+  padding: 3px;
+  background: conic-gradient(
+    from var(--angle, 0deg),
+    transparent 0deg 270deg,
+    rgba(255, 140, 0, 0.3) 270deg 300deg,
+    rgba(255, 160, 0, 0.7) 300deg 320deg,
+    rgba(255, 190, 80, 1) 320deg 340deg,
+    rgba(255, 160, 0, 0.7) 340deg 350deg,
+    rgba(255, 140, 0, 0.3) 350deg 360deg,
+    transparent 360deg
+  );
+  -webkit-mask: 
+    linear-gradient(#fff 0 0) content-box, 
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  animation: rotateBorder 2s linear infinite;
+  pointer-events: none;
+  filter: blur(1px) drop-shadow(0 0 8px rgba(255, 140, 0, 0.8)) drop-shadow(0 0 16px rgba(255, 190, 80, 0.6));
+}
+
+.loading-container.loaded::before {
+  animation: none;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 140, 0, 0.5) 0%,
+    rgba(255, 190, 80, 0.9) 50%,
+    rgba(255, 140, 0, 0.5) 100%
+  );
+  filter: blur(0.5px) drop-shadow(0 0 6px rgba(255, 140, 0, 0.7));
+}
+
+@keyframes rotateBorder {
+  0% {
+    --angle: 0deg;
+  }
+  100% {
+    --angle: 360deg;
+  }
+}
+
+@property --angle {
+  syntax: '<angle>';
+  initial-value: 0deg;
+  inherits: false;
 }
 
 .loading-spinner {
-  width: 40px;
-  height: 40px;
-  border: 3px solid #404040;
-  border-top: 3px solid #808080; 
-  border-radius: 50%;
-  margin: 0 auto 16px auto;
-  animation: spin 1s linear infinite;
+  display: none;
 }
 
 @keyframes spin {
@@ -80,33 +132,26 @@
   margin: 8px 0;
   font-size: 14px;
   font-weight: 600;
-  color: #b0b0b0; 
+  color: #d6d6d6;
 }
 
 .loading-subtext {
   font-size: 12px !important;
-  opacity: 0.6;
+  opacity: 0.7;
   font-weight: 400 !important;
-  color: #888888; 
+  color: #bdbdbd;
 }
 
 .loading-progress {
-  margin-top: 20px;
+  display: none;
 }
 
 .progress-bar {
-  width: 100%;
-  height: 4px;
-  background: #404040;
-  border-radius: 2px;
-  overflow: hidden;
+  display: none;
 }
 
 .progress-fill {
-  height: 100%;
-  background: #808080; 
-  border-radius: 2px;
-  animation: progressFill 2s ease-in-out infinite;
+  display: none;
 }
 
 @keyframes progressFill {
@@ -128,13 +173,13 @@
 }
 
 .results-content::-webkit-scrollbar-track {
-  background: #404040; 
+  background: rgba(255, 255, 255, 0.08);
   border-radius: 4px;
 }
 
 .results-content::-webkit-scrollbar-thumb {
-  background: #606060; 
-  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.22);
+  border-radius: 10px;
 }
 
 .results-content::-webkit-scrollbar-thumb:hover {
@@ -144,19 +189,23 @@
 .leetcode-helper-btn {
   width: 100%;
   border: none;
-  background: #1e1e1e;
+  background: rgba(255, 255, 255, 0.06);
   padding: 12px 16px;
   text-align: left;
   cursor: pointer;
-  border-bottom: 1px solid #404040; 
-  transition: all 0.2s ease;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  transition: transform 0.18s ease, background 0.18s ease, box-shadow 0.18s ease;
   position: relative;
   display: block;
+  border-radius: 14px;
+  margin: 8px 12px;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.04);
 }
 
 .leetcode-helper-btn:hover {
-  background: #2a2a2a;
-  transform: translateX(2px);
+  background: rgba(255, 255, 255, 0.1);
+  transform: translateY(-1px);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.35);
 }
 
 .leetcode-helper-btn:last-child {
@@ -170,11 +219,11 @@
 }
 
 .btn-title {
-  font-weight: 600;
-  font-size: 14px;
+  font-weight: 700;
+  font-size: 15px;
   color: #ffffff;
   margin-bottom: 6px;
-  line-height: 1.2;
+  line-height: 1.25;
 }
 
 .btn-meta {
@@ -193,56 +242,57 @@
   margin-top: 6px;
 }
 .difficulty, .match-percent, .topic-tag, .sql-badge, .premium-badge {
-  padding: 2px 8px;
-  border-radius: 12px;
+  padding: 6px 10px;
+  border-radius: 999px;
   font-size: 11px;
-  font-weight: 500;
+  font-weight: 600;
   text-transform: uppercase;
+  box-shadow: inset 0 -1px 0 rgba(255,255,255,0.1), inset 0 1px 0 rgba(0,0,0,0.25);
 }
 
 .difficulty.easy {
-  background: #2d5a41; 
+  background: rgba(45, 90, 65, 0.7);
   color: #ffffff;
 }
 
 .difficulty.medium {
-  background: #b8860b; 
+  background: rgba(184, 134, 11, 0.7);
   color: #ffffff;
 }
 
 .difficulty.hard {
-  background: #b22222;
+  background: rgba(178, 34, 34, 0.75);
   color: #ffffff;
 }
 
 .desc-match {
-  background: #2d5a41;
+  background: rgba(45, 90, 65, 0.6);
   color: #ffffff;
 }
 
 .title-match {
-  background: #b8860b; 
+  background: rgba(184, 134, 11, 0.6);
   color: #ffffff;
 }
 
 .topic-tag {
-  background: #5a5a5a; 
-  color: #cacaca;
+  background: rgba(255,255,255,0.12);
+  color: #e5e5e5;
 }
 
 .sql-badge {
-  background: #2e86ab; 
+  background: rgba(46, 134, 171, 0.8);
   color: #ffffff;
 }
 
 .premium-badge {
-  background: #d2691e; 
-  color: #f0f0f0;
+  background: rgba(210, 105, 30, 0.8);
+  color: #ffffff;
 }
 
 .total-match {
-  background: linear-gradient(135deg, #000000 40%, #ff8c00 100%);
-  color: #ffffff;
+  background: linear-gradient(135deg, rgba(255, 140, 0, 0.9) 0%, rgba(255, 190, 80, 0.9) 100%);
+  color: #151515;
 }
 
 .btn-arrow {
@@ -251,20 +301,20 @@
   top: 50%;
   transform: translateY(-50%);
   font-size: 16px;
-  color: #808080; 
+  color: rgba(255, 255, 255, 0.7);
   font-weight: bold;
-  transition: transform 0.2s;
+  transition: transform 0.18s, color 0.18s;
 }
 
 .leetcode-helper-btn:hover .btn-arrow {
-  transform: translateY(-50%) translateX(2px);
+  transform: translateY(-50%) translateX(3px);
   color: #ffffff;
 }
 
 .no-matches {
   padding: 24px;
   text-align: center;
-  color: #888888; 
+  color: #bbbbbb;
 }
 
 .no-matches p {
@@ -279,20 +329,22 @@
 }
 
 .leetcode-helper-title-btn {
-  background: none;
-  border: none;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.08);
   cursor: pointer;
   font-size: 1.2rem;
   margin-left: 8px;
-  padding: 2px 6px;
-  border-radius: 4px;
-  transition: all 0.2s;
+  padding: 4px 8px;
+  border-radius: 12px;
+  transition: transform 0.18s ease, background 0.18s ease, box-shadow 0.18s ease;
   vertical-align: middle;
+  backdrop-filter: blur(8px);
 }
 
 .leetcode-helper-title-btn:hover {
-  background: rgba(255, 255, 255, 0.08); 
-  transform: scale(1.1);
+  background: rgba(255, 255, 255, 0.12);
+  transform: scale(1.04);
+  box-shadow: 0 8px 22px rgba(0,0,0,0.35);
 }
 
 @media (max-width: 768px) {
@@ -300,6 +352,7 @@
     width: calc(100vw - 20px);
     right: 10px;
     top: 10px;
+    border-radius: 16px;
   }
 }
 
@@ -319,9 +372,9 @@
 }
 
 .premium-problem {
-  background: linear-gradient(135deg, #000000 40%, #ff8c00 100%) !important;
+  background: linear-gradient(135deg, rgba(255, 140, 0, 0.25) 0%, rgba(255, 190, 80, 0.2) 100%) !important;
   color: white !important;
-  border: 2px solid #ff8c00 !important;
+  border: 1px solid rgba(255, 140, 0, 0.45) !important;
 }
 
 .premium-problem .btn-title {
@@ -333,9 +386,9 @@
 }
 
 .premium-problem:hover {
-  background: linear-gradient(135deg, #1a1a1a 40%, #ff9500 100%) !important;
-  transform: translateX(4px) !important;
-  box-shadow: 0 4px 12px rgba(255, 140, 0, 0.3) !important;
+  background: linear-gradient(135deg, rgba(255, 140, 0, 0.35) 0%, rgba(255, 190, 80, 0.3) 100%) !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 10px 24px rgba(255, 140, 0, 0.25) !important;
 }
 
 .btn-meta {
@@ -347,10 +400,10 @@
 }
 
 .difficulty, .match-percent, .topic-tag, .sql-badge, .premium-badge {
-  padding: 2px 6px;
-  border-radius: 12px;
-  font-size: 10px; 
-  font-weight: 500;
+  padding: 5px 8px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 600;
   text-transform: uppercase;
 }
 

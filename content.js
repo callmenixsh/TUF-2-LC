@@ -93,9 +93,24 @@ function findMatchingProblems(pageText) {
 }
 
 function getProblemTitle() {
-    const titleElement = document.querySelector(
-        '.text-2xl.font-bold.text-new_primary.dark\\:text-new_dark_primary'
-    );
+    // Try multiple possible selectors to accommodate new UI frames
+    const selectors = [
+        '.text-2xl.font-bold.text-new_primary.dark\\:text-new_dark_primary',
+        'h1.text-xl.font-bold',
+        'h1.text-2xl.font-bold',
+        'h1.font-bold',
+        '[data-problem-title]',
+    ];
+    let titleElement = null;
+    for (const sel of selectors) {
+        titleElement = document.querySelector(sel);
+        if (titleElement) break;
+    }
+    if (!titleElement) {
+        // Fallback: first bold heading in main content
+        const fallback = document.querySelector('main h1, section h1, article h1');
+        titleElement = fallback || null;
+    }
     return titleElement ? titleElement.textContent.replace(/🔍|<svg.*?<\/svg>/g, '').trim() : null;
 }
 
@@ -107,20 +122,37 @@ function getTUFProblemContent() {
         content += title + ' ';
     }
     
-    const descriptionElement = document.querySelector('.mt-6.w-full.text-new_secondary.text-\\[14px\\].dark\\:text-zinc-200');
+    // Description container: support old and new UI structures
+    const descSelectors = [
+        '.mt-6.w-full.text-new_secondary.text-\\[14px\\].dark\\:text-zinc-200',
+        '.tuf-text-14',
+        '.tuf-example',
+        '[data-problem-description]',
+    ];
+    let descriptionElement = null;
+    for (const sel of descSelectors) {
+        const el = document.querySelector(sel);
+        if (el) { descriptionElement = el; break; }
+    }
+    if (!descriptionElement) {
+        // Fallback: main content paragraphs
+        descriptionElement = document.querySelector('main') || document.querySelector('article');
+    }
     if (descriptionElement) {
-        const paragraphs = descriptionElement.querySelectorAll('p');
+        const paragraphs = descriptionElement.querySelectorAll('p, li');
         const descText = Array.from(paragraphs)
             .map(p => p.textContent.trim())
             .filter(text => text.length > 0)
             .join(' ');
-        
         if (descText) {
             content += descText + ' ';
         }
     }
     
-    const constraintsContainer = document.querySelector('.mt-4.flex.flex-col.gap-y-2.mb-24');
+    // Constraints or bullets section
+    const constraintsContainer = document.querySelector('.mt-4.flex.flex-col.gap-y-2.mb-24') ||
+        document.querySelector('.tuf-dark-content-box') ||
+        document.querySelector('[data-constraints]');
     if (constraintsContainer) {
         const constraintsList = constraintsContainer.querySelector('ul');
         if (constraintsList) {
@@ -156,25 +188,25 @@ function closeSearchResults() {
     }
 }
 
-function showLoadingScreen() {
+function showLoadingScreen(titleButton) {
     const container = createButtonContainer();
     container.innerHTML = `
         <div class="leetcode-helper-header">
             <span>Searching for matches...</span>
         </div>
         <div class="loading-container">
-            <div class="loading-spinner"></div>
             <div class="loading-text">
                 <p>Analyzing problem content...</p>
                 <p class="loading-subtext">Checking ${leetcodeData.length} LeetCode problems</p>
             </div>
-            <div class="loading-progress">
-                <div class="progress-bar">
-                    <div class="progress-fill"></div>
-                </div>
-            </div>
         </div>
     `;
+    // Position below button immediately
+    if (titleButton) {
+        const rect = titleButton.getBoundingClientRect();
+        container.style.top = `${rect.bottom + window.scrollY + 5}px`;
+        container.style.left = `${rect.left + window.scrollX}px`;
+    }
     container.style.display = 'block';
 }
 
@@ -221,6 +253,12 @@ function createLeetCodeButton(problem) {
 
 function updateUI(matches) {
     const container = createButtonContainer();
+    
+    // Stop border animation by adding loaded class
+    const loadingContainer = container.querySelector('.loading-container');
+    if (loadingContainer) {
+        loadingContainer.classList.add('loaded');
+    }
     
     const content = document.createElement('div');
     content.className = 'results-content';
@@ -307,7 +345,7 @@ function createTitleButton() {
         titleButton.style.pointerEvents = 'none';
         
         try {
-            showLoadingScreen();
+            showLoadingScreen(titleButton);
             
             const content = getTUFProblemContent();
             if (content) {
@@ -316,10 +354,8 @@ function createTitleButton() {
                 const matches = await findMatchingProblems(content);
                 updateUI(matches);
                 
-                const rect = titleButton.getBoundingClientRect();
+                // Position is already set by showLoadingScreen
                 if (buttonContainer) {
-                    buttonContainer.style.top = `${rect.bottom + window.scrollY + 5}px`;
-                    buttonContainer.style.left = `${rect.left + window.scrollX}px`;
                     buttonContainer.style.display = 'block';
                 }
             }
@@ -345,7 +381,7 @@ if (typeof localStorage !== 'undefined') {
 
 function removeTitleButton() {
     const titleElement = document.querySelector(
-        '.text-2xl.font-bold.text-new_primary.dark\\:text-new_dark_primary'
+        '.text-2xl.font-bold.text-new_primary.dark\\:text-new_dark_primary, h1.text-xl.font-bold, h1.text-2xl.font-bold, h1.font-bold, [data-problem-title]'
     );
     if (titleElement) {
         const btn = titleElement.querySelector('.leetcode-helper-title-btn');
@@ -370,7 +406,7 @@ function injectTitleButton() {
         return;
     }
     const titleElement = document.querySelector(
-        '.text-2xl.font-bold.text-new_primary.dark\\:text-new_dark_primary'
+        '.text-2xl.font-bold.text-new_primary.dark\\:text-new_dark_primary, h1.text-xl.font-bold, h1.text-2xl.font-bold, h1.font-bold, [data-problem-title]'
     );
     if (titleElement && !titleElement.querySelector('.leetcode-helper-title-btn')) {
         const titleButton = createTitleButton();
